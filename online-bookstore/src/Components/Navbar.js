@@ -1,10 +1,11 @@
 import React from 'react';
-import './App.css'; 
+
 function Navbar() {
   return (
     <nav className="navbar">
       <div className="nav-container">
         <div className="nav-logo">
+          <img src="/logo512.png" alt="Online BookStore" className="logo-img" />
           <h2>Online BookStore</h2>
         </div>
         <ul className="nav-menu">
