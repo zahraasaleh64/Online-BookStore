@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { useCart } from '../Context/CartContext';
 
 
 // Import slider images
@@ -16,6 +18,7 @@ import book6 from '../assets/products/book6.jpg';
 
 
 function Home() {
+  const { addToCart } = useCart();
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const slides = [
@@ -58,7 +61,7 @@ function Home() {
     { id: 4, title: "Pride and Prejudice", author: "Jane Austen", price: "$11.99", image: book4 },
     { id: 5, title: "The Catcher in the Rye", author: "J.D. Salinger", price: "$15.99", image: book5 },
     { id: 6, title: "Lord of the Flies", author: "William Golding", price: "$12.99", image: book6 }
-  ];
+    ];
 
   return (
     <div className="home">
@@ -75,7 +78,7 @@ function Home() {
                 <div className="slide-content">
                   <h2>{slide.title}</h2>
                   <p>{slide.description}</p>
-                  <button className="slide-button">Shop Now</button>
+                  <Link to="/books" className="slide-button">Shop Now</Link>
                 </div>
               </div>
             ))}
@@ -149,11 +152,16 @@ function Home() {
                   </div>
                 </div>
                 <div className="product-info">
-                  <h3 className="product-title">{product.title}</h3>
-                  <p className="product-author">{product.author}</p>
-                  <p className="product-price">{product.price}</p>
-                  <button className="add-to-cart-btn">Add to Cart</button>
-                </div>
+  <h3 className="product-title">{product.title}</h3>
+  <p className="product-author">{product.author}</p>
+  <p className="product-price">{product.price}</p>
+  <button 
+    className="add-to-cart-btn" 
+    onClick={() => addToCart(product)}
+  >
+    Add to Cart
+  </button>
+</div>
               </div>
             ))}
           </div>
@@ -167,21 +175,22 @@ function Home() {
           <div className="contact-content">
             <div className="contact-info">
               <div className="contact-item">
-                <h3>📍 Address</h3>
+                <h3> Address</h3>
                 <p>123 Book Street, Reading City, RC 12345</p>
               </div>
               <div className="contact-item">
-                <h3>📧 Email</h3>
+                <h3> Email</h3>
                 <p>info@onlinebookstore.com</p>
               </div>
               <div className="contact-item">
-                <h3>📞 Phone</h3>
-                <p>+1 (555) 123-4567</p>
+                <h3> Phone</h3>
+                <p>+961 3 856 843</p>
               </div>
               <div className="contact-item">
-                <h3>🕒 Hours</h3>
+                <h3> Hours</h3>
                 <p>Monday - Friday: 9:00 AM - 6:00 PM</p>
-                <p>Saturday - Sunday: 10:00 AM - 4:00 PM</p>
+                <p>Saturday : 10:00 AM - 4:00 PM</p>
+                <p>Sunday: Off</p>
               </div>
             </div>
             <form className="contact-form">

@@ -21,7 +21,7 @@ function Footer() {
         <div className="footer-section">
           <h3>Contact</h3>
           <p>Email: info@onlinebookstore.com</p>
-          <p>Phone: +1 (555) 123-4567</p>
+          <p>Phone: +961 3 856 843</p>
         </div>
       </div>
       <div className="footer-bottom">
