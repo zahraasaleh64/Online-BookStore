@@ -2,60 +2,64 @@
 
 This project is a full-stack Online Bookstore including a **Customer Storefront**, an **Admin Dashboard**, and a **Node.js API Server**.
 
-## 🏗 Project Structure
+## 🛠 Project Structure
 - **/frontend**: The main customer-facing website (React).
 - **/backend**: The Admin Dashboard for managing products and orders (React).
 - **/server**: The API server and database (Node.js & SQLite).
 
 ---
 
-## 🚀 Production Deployment Instructions
+## ⚙️ Requirements
+- **Node.js Version**: `v20.x` or higher (Developed using `v25.1.0`).
 
-This project is configured to run on a single domain (e.g., `www.yourdomain.com`) without requiring port numbers in the URL.
+---
 
-### 1. Build the Applications
-Before uploading to your server, you must generate the production builds for both the storefront and the dashboard. 
+## 🚀 Production Deployment Instructions (cPanel / Hostinger)
 
-Run these commands in your local terminal:
+### 1. Build the Applications Locally
+**DO NOT build on the server.** Shared hosting (cPanel/Hostinger) often lacks the RAM for React builds. 
+
+Run these on your **Local Computer**:
 ```bash
 # Build Storefront
-cd frontend
-npm install
-npm run build
+cd frontend && npm run build
 
 # Build Admin Dashboard
-cd backend
-npm install
-npm run build
+cd backend && npm run build
+
+# Push to GitHub
+git add .
+git commit -m "Prepare production builds"
+git push origin main
 ```
 
-### 2. Upload Files to Your Server
-Upload the entire project to your host (via FTP, File Manager, or Git). Ensure the following folders exist:
-- `backend/build`
-- `frontend/build`
-- `server/`
-- `.htaccess` (in the root directory)
+### 2. cPanel / Hostinger Setup Guide
+Follow these steps in your hosting dashboard:
 
-### 3. Server-Side Configuration (cPanel / Apache)
-Your project includes an `.htaccess` file configured for domain-based hosting. 
+1. **Go to "Setup Node.js App"** (often found in the Software section).
+2. **Create New Application**:
+   - **Node.js version**: Choose `20.x` or the latest available.
+   - **Application mode**: `Production`.
+   - **Application root**: `public_html` (or the folder where you pulled the code).
+   - **Application URL**: Select your domain.
+   - **Application startup file**: `server/index.js`.
+3. **Environment Variables**:
+   - Add `PORT` (usually given by host, e.g., 5001 or handled internally).
+   - Add `JWT_SECRET`: (A secure random string).
+4. **Run npm install**:
+   - In the Node.js App section, look for the button **"Run JS script"** or **"Execute npm install"**. 
+   - You must run this for the `server` directory so the API works.
 
-1. **Node.js Setup**: Using your hosting's "Setup Node.js App" tool:
-   - **Application root**: Select the root folder.
-   - **Application URL**: Your domain (e.g., `yourdomain.com`).
-   - **Application startup file**: `server/index.js`
-2. **Environment Variables**: Add these in your hosting dashboard:
-   - `NODE_ENV`: `production`
-   - `PORT`: (The host usually provides this automatically)
-   - `JWT_SECRET`: (Enter a long random string for security)
-
-### 4. Database & Uploads
-- The database is stored in `server/database.sqlite`. Ensure this file has **read/write permissions**.
-- Product images are stored in `server/uploads/`. Ensure this folder has **write permissions**.
+### 3. Git Pull on Server
+If you are using terminal on the server:
+```bash
+cd public_html
+git pull origin main
+```
 
 ---
 
 ## 💻 Local Development
-If you want to run it on your own computer:
 1. **Start Server**: `cd server && node index.js` (Runs on port 5001)
 2. **Access Storefront**: `http://localhost:5001`
 3. **Access Admin**: `http://localhost:5001/admin`
