@@ -31,7 +31,7 @@ const ProductForm = () => {
         if (isEdit) {
             const fetchProduct = async () => {
                 try {
-                    const response = await fetch(`http://localhost:5001/api/products/${id}`);
+                    const response = await fetch(`/api/products/${id}`);
                     const data = await response.json();
                     setFormData(data);
                 } catch (error) {
@@ -54,7 +54,7 @@ const ProductForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const url = isEdit ? `http://localhost:5001/api/products/${id}` : 'http://localhost:5001/api/products';
+            const url = isEdit ? `/api/products/${id}` : '/api/products';
             const method = isEdit ? 'PUT' : 'POST';
 
             const data = new FormData();

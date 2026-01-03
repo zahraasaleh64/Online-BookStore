@@ -21,7 +21,7 @@ const ProductList = () => {
 
     const fetchProducts = async () => {
         try {
-            const response = await fetch('http://localhost:5001/api/products');
+            const response = await fetch('/api/products');
             const data = await response.json();
             setProducts(data);
         } catch (error) {
@@ -36,7 +36,7 @@ const ProductList = () => {
     const handleDelete = async (id) => {
         if (window.confirm("Are you sure you want to delete this product?")) {
             try {
-                await fetch(`http://localhost:5001/api/products/${id}`, {
+                await fetch(`/api/products/${id}`, {
                     method: 'DELETE',
                 });
                 fetchProducts();

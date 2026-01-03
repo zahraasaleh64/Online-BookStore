@@ -1,0 +1,14 @@
+# This .htaccess is for Apache servers (like cPanel) to forward traffic to your Node.js app.
+# It assumes your server is running on port 5001.
+
+RewriteEngine On
+
+# Redirect all traffic to the Node.js application running on port 5001
+RewriteRule ^$ http://127.0.0.1:5001/ [P,L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ http://127.0.0.1:5001/$1 [P,L]
+
+# Optional: Ensure HTTPS is used
+# RewriteCond %{HTTPS} off
+# RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]

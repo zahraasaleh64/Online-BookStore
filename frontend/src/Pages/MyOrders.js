@@ -18,7 +18,7 @@ const MyOrders = () => {
         const fetchOrders = async () => {
             try {
                 // Fetch orders for this specific user
-                const response = await fetch(`http://localhost:5001/api/orders/user/${user.id}`);
+                const response = await fetch(`/api/orders/user/${user.id}`);
                 if (response.ok) {
                     const data = await response.json();
                     // Sort orders by date descending (newest first)

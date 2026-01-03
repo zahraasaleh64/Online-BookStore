@@ -13,7 +13,7 @@ function Books() {
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const response = await fetch('http://localhost:5001/api/products');
+        const response = await fetch('/api/products');
         const data = await response.json();
         setAllBooks(data);
         setLoading(false);
@@ -88,7 +88,7 @@ function Books() {
               {filteredBooks.map((book) => (
                 <div key={book.id} className="book-card">
                   <div className="book-image">
-                    <img src={book.image && book.image.startsWith('/uploads') ? `http://localhost:5001${book.image}` : book.image} alt={book.title} />
+                    <img src={book.image && book.image.startsWith('/uploads') ? `${book.image}` : book.image} alt={book.title} />
                     <div className="book-overlay">
                       <button className="quick-view-btn">Quick View</button>
                     </div>

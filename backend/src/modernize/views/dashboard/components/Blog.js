@@ -9,7 +9,7 @@ const Blog = () => {
     const [products, setProducts] = useState([]);
 
     useEffect(() => {
-        fetch('http://localhost:5001/api/products')
+        fetch('/api/products')
             .then(res => res.json())
             .then(data => {
                 setProducts(data.slice(0, 4)); // Only show top 4 for the dashboard
@@ -29,7 +29,7 @@ const Blog = () => {
                     <BlankCard>
                         <Typography component={Link} to="/">
                             <img
-                                src={product.image.startsWith('http') ? product.image : `http://localhost:5001${product.image}`}
+                                src={product.image.startsWith('http') ? product.image : `${product.image}`}
                                 alt={product.title}
                                 width="100%"
                                 style={{ height: '250px', objectFit: 'cover' }}
