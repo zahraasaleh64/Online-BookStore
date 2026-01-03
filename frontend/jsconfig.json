@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "baseUrl": "src",
+        "paths": {
+            "modernize/*": [
+                "modernize/*"
+            ]
+        }
+    },
+    "include": [
+        "src"
+    ]
+}

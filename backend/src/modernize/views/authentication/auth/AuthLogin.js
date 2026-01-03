@@ -1,0 +1,123 @@
+import React, { useState } from 'react';
+import {
+    Box,
+    Typography,
+    FormGroup,
+    FormControlLabel,
+    Button,
+    Stack,
+    Checkbox
+} from '@mui/material';
+import { Link, useNavigate } from 'react-router-dom';
+
+import CustomTextField from '../../../components/forms/theme-elements/CustomTextField';
+
+const AuthLogin = ({ title, subtitle, subtext, onLogin }) => {
+    const [email, setEmail] = useState('admin@bookstore.com');
+    const [password, setPassword] = useState('admin123');
+    const [error, setError] = useState('');
+    const navigate = useNavigate();
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+
+        try {
+            const response = await fetch('http://localhost:5001/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                if (data.user.role === 'admin') {
+                    if (onLogin) onLogin(data.user); // Pass user data back to App
+                    // App.js will handle redirect to dashboard
+                } else {
+                    setError('Access Denied. Admins only.');
+                }
+            } else {
+                setError(data.error || 'Login failed');
+            }
+        } catch (err) {
+            setError('Something went wrong. Please try again.');
+            console.error(err);
+        }
+    };
+
+    return (
+        <>
+            {title ? (
+                <Typography fontWeight="700" variant="h2" mb={1}>
+                    {title}
+                </Typography>
+            ) : null}
+
+            {subtext}
+
+            {error && <Typography color="error" textAlign="center" mb={2}>{error}</Typography>}
+
+            <Stack>
+                <Box>
+                    <Typography variant="subtitle1"
+                        fontWeight={600} component="label" htmlFor='email' mb="5px">Email</Typography>
+                    <CustomTextField
+                        id="email"
+                        variant="outlined"
+                        fullWidth
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                </Box>
+                <Box mt="25px">
+                    <Typography variant="subtitle1"
+                        fontWeight={600} component="label" htmlFor='password' mb="5px" >Password</Typography>
+                    <CustomTextField
+                        id="password"
+                        type="password"
+                        variant="outlined"
+                        fullWidth
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                </Box>
+                <Stack justifyContent="space-between" direction="row" alignItems="center" my={2}>
+                    <FormGroup>
+                        <FormControlLabel
+                            control={<Checkbox defaultChecked />}
+                            label="Remember this Device"
+                        />
+                    </FormGroup>
+                    <Typography
+                        component={Link}
+                        to="/"
+                        fontWeight="500"
+                        sx={{
+                            textDecoration: 'none',
+                            color: 'primary.main',
+                        }}
+                    >
+                        Forgot Password ?
+                    </Typography>
+                </Stack>
+            </Stack>
+            <Box>
+                <Button
+                    color="primary"
+                    variant="contained"
+                    size="large"
+                    fullWidth
+                    onClick={handleSubmit}
+                    type="submit"
+                >
+                    Sign In
+                </Button>
+            </Box>
+            {subtitle}
+        </>
+    );
+};
+
+export default AuthLogin;
