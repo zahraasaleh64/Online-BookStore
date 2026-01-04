@@ -65,10 +65,12 @@ const initDb = async () => {
         await db.query(`CREATE TABLE IF NOT EXISTS orders (
             id INT AUTO_INCREMENT PRIMARY KEY,
             user_id INT,
-            customerName VARCHAR(255) NOT NULL,
-            orderDate VARCHAR(50) NOT NULL,
-            totalAmount VARCHAR(50) NOT NULL,
-            status VARCHAR(50) NOT NULL
+            firstName VARCHAR(100),
+            lastName VARCHAR(100),
+            items TEXT,
+            total VARCHAR(50),
+            status VARCHAR(50) DEFAULT 'Pending',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )`);
 
         const [users] = await db.query("SELECT * FROM users WHERE email = ?", ['admin@bookstore.com']);
@@ -97,8 +99,9 @@ const initDb = async () => {
         const orderCount = (orders[0] && (orders[0].count || orders[0]['count(*)'])) || 0;
 
         if (orderCount === 0) {
-            await db.query("INSERT INTO orders (customerName, orderDate, totalAmount, status) VALUES (?, ?, ?, ?)",
-                ["John Doe", "2023-10-01", "$45.99", "Delivered"]);
+            const sampleItems = JSON.stringify([{ title: "Sample Book", price: "$45.99", quantity: 1 }]);
+            await db.query("INSERT INTO orders (firstName, lastName, items, total, status) VALUES (?, ?, ?, ?, ?)",
+                ["John", "Doe", sampleItems, "$45.99", "Delivered"]);
         }
     } catch (err) {
         console.error("Database initialization error:", err.message);

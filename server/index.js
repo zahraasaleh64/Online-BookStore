@@ -85,6 +85,65 @@ app.get('/api/products', async (req, res) => {
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+app.get('/api/products/:id', async (req, res) => {
+    try {
+        const [rows] = await db.query("SELECT * FROM products WHERE id = ?", [req.params.id]);
+        if (rows.length === 0) return res.status(404).json({ error: "Product not found" });
+        res.json(rows[0]);
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/products', authenticateToken, isAdmin, upload.single('imageFile'), async (req, res) => {
+    try {
+        const { title, author, price, category, image } = req.body;
+        const imagePath = req.file ? `/uploads/${req.file.filename}` : image;
+
+        const [result] = await db.query("INSERT INTO products (title, author, price, category, image) VALUES (?, ?, ?, ?, ?)",
+            [title, author, price, category, imagePath]);
+
+        res.status(201).json({ id: result.insertId, title, author, price, category, image: imagePath });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.put('/api/products/:id', authenticateToken, isAdmin, upload.single('imageFile'), async (req, res) => {
+    try {
+        const { title, author, price, category, image } = req.body;
+        const id = req.params.id;
+
+        const [existing] = await db.query("SELECT * FROM products WHERE id = ?", [id]);
+        if (existing.length === 0) return res.status(404).json({ error: "Product not found" });
+
+        let imagePath = req.file ? `/uploads/${req.file.filename}` : image;
+        if (!imagePath && !req.file) {
+            imagePath = existing[0].image;
+        }
+
+        await db.query("UPDATE products SET title=?, author=?, price=?, category=?, image=? WHERE id=?",
+            [title, author, price, category, imagePath, id]);
+
+        res.json({ message: "Product updated successfully" });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.delete('/api/products/:id', authenticateToken, isAdmin, async (req, res) => {
+    try {
+        await db.query("DELETE FROM products WHERE id = ?", [req.params.id]);
+        res.json({ message: "Product deleted" });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/orders', async (req, res) => {
+    try {
+        const { user_id, firstName, lastName, items, total } = req.body;
+        const itemsJson = JSON.stringify(items);
+
+        await db.query("INSERT INTO orders (user_id, firstName, lastName, items, total) VALUES (?, ?, ?, ?, ?)",
+            [user_id, firstName, lastName, itemsJson, total]);
+
+        res.status(201).json({ message: "Order placed successfully" });
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 app.get('/api/orders', authenticateToken, isAdmin, async (req, res) => {
     try {
         const [rows] = await db.query("SELECT * FROM orders ORDER BY id DESC");

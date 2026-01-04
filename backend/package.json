@@ -2,8 +2,8 @@
   "name": "online-bookstore",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:5001",
   "homepage": "/admin",
+  "proxy": "http://localhost:5001",
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
     "@emotion/react": "^11.14.0",

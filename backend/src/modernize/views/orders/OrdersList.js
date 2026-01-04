@@ -95,16 +95,18 @@ const OrdersList = () => {
                                 </TableCell>
                                 <TableCell>
                                     <Typography variant="subtitle2" fontWeight={600}>
-                                        {order.customerName}
+                                        {order.firstName} {order.lastName}
                                     </Typography>
                                 </TableCell>
                                 <TableCell>
                                     <Typography color="textSecondary" variant="subtitle2" fontWeight={400}>
-                                        {order.orderDate}
+                                        {new Date(order.created_at).toLocaleDateString()} {new Date(order.created_at).toLocaleTimeString()}
                                     </Typography>
                                 </TableCell>
                                 <TableCell>
-                                    <Typography variant="h6">{order.totalAmount}</Typography>
+                                    <Typography variant="h6">
+                                        ${order.total ? parseFloat(String(order.total).replace('$', '')).toFixed(2) : '0.00'}
+                                    </Typography>
                                 </TableCell>
                                 <TableCell>
                                     <Chip

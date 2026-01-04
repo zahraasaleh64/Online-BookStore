@@ -20,6 +20,14 @@ import book6 from '../assets/products/book6.jpg';
 function Home() {
   const { addToCart } = useCart();
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    fetch('/api/products')
+      .then(res => res.json())
+      .then(data => setProducts(data.slice(0, 6)))
+      .catch(err => console.error("Error fetching products:", err));
+  }, []);
 
   const slides = [
     {
@@ -37,7 +45,7 @@ function Home() {
       description: "Check out our latest additions to the collection",
       image: slide3
     }
-];
+  ];
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -54,14 +62,7 @@ function Home() {
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
   };
 
-  const products = [
-    { id: 1, title: "The Product Book", author: "Josh Anon and Carlos Gonzalez De Villaumbrosia", price: "$19.99", image: book1 },
-    { id: 2, title: "Cracking the PM Interview", author: " Gayle Laakmann McDowell ", price: "$14.77", image: book2 },
-    { id: 3, title: "1984", author: "George Orwell", price: "$13.99", image: book3 },
-    { id: 4, title: "Pride and Prejudice", author: "Jane Austen", price: "$11.99", image: book4 },
-    { id: 5, title: "The Catcher in the Rye", author: "J.D. Salinger", price: "$15.99", image: book5 },
-    { id: 6, title: "Lord of the Flies", author: "William Golding", price: "$12.99", image: book6 }
-    ];
+
 
   return (
     <div className="home">
@@ -104,19 +105,19 @@ function Home() {
           <div className="about-content">
             <div className="about-text">
               <p>
-                Welcome to Online BookStore, your one-stop destination for all your reading needs. 
-                We are passionate about books and committed to providing you with the best selection 
+                Welcome to Online BookStore, your one-stop destination for all your reading needs.
+                We are passionate about books and committed to providing you with the best selection
                 of books from around the world.
               </p>
               <p>
-                Our mission is to make reading accessible to everyone. We offer a wide range of genres 
-                including fiction, non-fiction, science fiction, mystery, romance, and many more. 
-                Whether you're looking for the latest bestsellers or timeless classics, we have something 
+                Our mission is to make reading accessible to everyone. We offer a wide range of genres
+                including fiction, non-fiction, science fiction, mystery, romance, and many more.
+                Whether you're looking for the latest bestsellers or timeless classics, we have something
                 for every reader.
               </p>
               <p>
-                With over 10,000 books in our collection and new titles added weekly, we ensure that 
-                you always have access to the latest and greatest in literature. Our team of book 
+                With over 10,000 books in our collection and new titles added weekly, we ensure that
+                you always have access to the latest and greatest in literature. Our team of book
                 enthusiasts carefully curates our selection to bring you only the best.
               </p>
             </div>
@@ -146,22 +147,19 @@ function Home() {
             {products.map((product) => (
               <div key={product.id} className="product-card">
                 <div className="product-image">
-                  <img src={product.image} alt={product.title} />
-                  <div className="product-overlay">
-                    <button className="quick-view-btn">Quick View</button>
-                  </div>
+                  <img src={product.image && product.image.startsWith('/uploads') ? `${product.image}` : product.image} alt={product.title} />
                 </div>
                 <div className="product-info">
-  <h3 className="product-title">{product.title}</h3>
-  <p className="product-author">{product.author}</p>
-  <p className="product-price">{product.price}</p>
-  <button 
-    className="add-to-cart-btn" 
-    onClick={() => addToCart(product)}
-  >
-    Add to Cart
-  </button>
-</div>
+                  <h3 className="product-title">{product.title}</h3>
+                  <p className="product-author">{product.author}</p>
+                  <p className="product-price">{product.price}</p>
+                  <button
+                    className="add-to-cart-btn"
+                    onClick={() => addToCart(product)}
+                  >
+                    Add to Cart
+                  </button>
+                </div>
               </div>
             ))}
           </div>

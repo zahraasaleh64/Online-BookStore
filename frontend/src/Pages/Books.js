@@ -89,9 +89,6 @@ function Books() {
                 <div key={book.id} className="book-card">
                   <div className="book-image">
                     <img src={book.image && book.image.startsWith('/uploads') ? `${book.image}` : book.image} alt={book.title} />
-                    <div className="book-overlay">
-                      <button className="quick-view-btn">Quick View</button>
-                    </div>
                   </div>
                   <div className="book-info">
                     <span className="book-category">{book.category}</span>
