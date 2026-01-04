@@ -59,15 +59,32 @@ In your hosting panel (Hostinger or cPanel), go to **"Setup Node.js App"**:
 
 ### 3. Connection & Dependencies
 - **Install Server Requirements**: In the Node.js setup page, click the **"Run npm install"** button. This installs the specific needs for the server (Express, SQLite3, etc.) located in `server/package.json`.
-- **Database**: The shop uses **SQLite**. It connects to `server/database.sqlite` automatically. You **do not** need to create a MySQL database in cPanel.
+### 3. Database Connection (SQLite or MySQL)
+Your shop is flexible and can use either **SQLite** (easy) or **MySQL** (pro).
+
+#### Option A: SQLite (Default)
+- You don't need to do anything. The shop will use `server/database.sqlite`.
+- **Note**: Ensure the `server` folder has **Write Permissions** (755) in cPanel.
+
+#### Option B: MySQL (Recommended for cPanel)
+If you prefer MySQL, follow these steps in cPanel:
+1.  **Create a MySQL Database** and a **User** in cPanel.
+2.  **Add User to Database** with "All Privileges".
+3.  **Add Environment Variables** in your Node.js Setup page:
+    - `DB_HOST`: `localhost`
+    - `DB_USER`: (Your database username)
+    - `DB_PASSWORD`: (Your database password)
+    - `DB_NAME`: (Your database name)
+4.  **The Shop will automatically** detect these variables and switch from SQLite to MySQL. It will even create the tables for you!
 
 ---
 
-## 🗄️ Step 4: Folder Permissions (IMPORTANT)
-If you can't add products or see images, check these permissions in your **File Manager**:
-1.  Right-click the `server` folder -> **Permissions** -> Set to **755** (Ensure "Write" is checked for the owner).
-2.  Do the same for `server/uploads` (the folder for book covers).
-3.  Ensure `server/database.sqlite` is writable.
+### 4. Writing Access (Important)
+For the shop to save products and orders, the server must be allowed to "Write". 
+1.  Using your hosting's **File Manager**, right-click the `server` folder.
+2.  Select **Permissions**.
+3.  Ensure it is set to **755** or **775**.
+4.  Do the same for the `server/uploads` folder so you can upload book covers.
 
 ---
 
