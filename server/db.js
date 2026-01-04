@@ -80,6 +80,33 @@ const initDb = async () => {
                 ['admin@bookstore.com', hashedPassword, 'Admin', 'User', 'admin']);
             console.log("Admin user created.");
         }
+
+        // Seed Products if missing
+        const [products] = await db.query("SELECT COUNT(*) as count FROM products");
+        const count = isProduction && process.env.DB_HOST ? products[0].count : products[0][0]['count(*)'] || products[0][0]['COUNT(*)'];
+
+        if (count === 0) {
+            const initialBooks = [
+                { title: "The Product Book", author: "Josh Anon", price: "19.99", category: "Business", image: "/assets/products/book1.jpg" },
+                { title: "PM Interview", author: "Gayle McDowell", price: "14.77", category: "Career", image: "/assets/products/book2.jpeg" },
+                { title: "1984", author: "George Orwell", price: "13.99", category: "Fiction", image: "/assets/products/book3.jpg" }
+            ];
+            for (const book of initialBooks) {
+                await db.query("INSERT INTO products (title, author, price, category, image) VALUES (?, ?, ?, ?, ?)",
+                    [book.title, book.author, book.price, book.category, book.image]);
+            }
+            console.log("Database seeded with products.");
+        }
+
+        // Seed Orders if missing
+        const [orders] = await db.query("SELECT COUNT(*) as count FROM orders");
+        const orderCount = isProduction && process.env.DB_HOST ? orders[0].count : orders[0][0]['count(*)'] || orders[0][0]['COUNT(*)'];
+
+        if (orderCount === 0) {
+            await db.query("INSERT INTO orders (customerName, orderDate, totalAmount, status) VALUES (?, ?, ?, ?)",
+                ["John Doe", "2023-10-01", "$45.99", "Delivered"]);
+            console.log("Database seeded with orders.");
+        }
     } catch (err) {
         console.error("Database Init Error:", err);
     }
