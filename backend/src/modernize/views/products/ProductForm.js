@@ -67,8 +67,10 @@ const ProductForm = () => {
                 data.append('imageFile', selectedFile);
             }
 
+            const token = localStorage.getItem('adminToken');
             const response = await fetch(url, {
                 method,
+                headers: { 'Authorization': `Bearer ${token}` },
                 body: data
             });
 

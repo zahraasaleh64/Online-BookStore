@@ -16,7 +16,10 @@ const OrdersList = () => {
 
     const fetchOrders = async () => {
         try {
-            const response = await fetch('/api/orders');
+            const token = localStorage.getItem('adminToken');
+            const response = await fetch('/api/orders', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             const data = await response.json();
             setOrders(data);
         } catch (error) {

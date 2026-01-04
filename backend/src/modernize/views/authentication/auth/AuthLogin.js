@@ -33,8 +33,7 @@ const AuthLogin = ({ title, subtitle, subtext, onLogin }) => {
 
             if (response.ok) {
                 if (data.user.role === 'admin') {
-                    if (onLogin) onLogin(data.user); // Pass user data back to App
-                    // App.js will handle redirect to dashboard
+                    if (onLogin) onLogin(data); // Pass full data including token
                 } else {
                     setError('Access Denied. Admins only.');
                 }

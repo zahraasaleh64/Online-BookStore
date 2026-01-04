@@ -8,7 +8,7 @@ import '../App.css';
 function Checkout() {
   const navigate = useNavigate();
   const { cartItems, getTotalPrice, clearCart } = useCart();
-  const { user } = useContext(AuthContext);
+  const { user, token } = useContext(AuthContext);
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -65,6 +65,7 @@ function Checkout() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(orderData),
       });

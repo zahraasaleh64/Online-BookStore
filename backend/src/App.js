@@ -20,11 +20,18 @@ const ProtectedRoute = ({ isAuthenticated }) => {
 };
 
 function App() {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('adminToken'));
 
-    const handleLogin = (e) => {
-        // Basic mock login - in a real app, you'd verify credentials here
+    const handleLogin = (data) => {
+        localStorage.setItem('adminToken', data.token);
+        localStorage.setItem('adminUser', JSON.stringify(data.user));
         setIsAuthenticated(true);
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminUser');
+        setIsAuthenticated(false);
     };
 
     return (

@@ -41,6 +41,29 @@ app.use(express.static(path.join(__dirname, '..', 'frontend', 'build')));
 // Initialize Database
 initDb();
 
+// Middleware to verify JWT Token
+const authenticateToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) return res.status(401).json({ error: "Access denied. No token provided." });
+
+    jwt.verify(token, SECRET_KEY, (err, user) => {
+        if (err) return res.status(403).json({ error: "Invalid or expired token." });
+        req.user = user;
+        next();
+    });
+};
+
+// Middleware to check for Admin Role
+const isAdmin = (req, res, next) => {
+    if (req.user && req.user.role === 'admin') {
+        next();
+    } else {
+        res.status(403).json({ error: "Access denied. Admins only." });
+    }
+};
+
 // --- Auth Routes ---
 
 app.post('/api/signup', async (req, res) => {
@@ -93,7 +116,7 @@ app.get('/api/products', async (req, res) => {
     }
 });
 
-app.get('/api/orders', async (req, res) => {
+app.get('/api/orders', authenticateToken, isAdmin, async (req, res) => {
     try {
         const [rows] = await db.query("SELECT * FROM orders ORDER BY id DESC");
         res.json(rows);
@@ -102,9 +125,13 @@ app.get('/api/orders', async (req, res) => {
     }
 });
 
-app.get('/api/orders/user/:userId', async (req, res) => {
+app.get('/api/orders/user/:userId', authenticateToken, async (req, res) => {
     try {
         const { userId } = req.params;
+        // Basic security: users can only see their own orders
+        if (req.user.id != userId && req.user.role !== 'admin') {
+            return res.status(403).json({ error: "Forbidden: You cannot view other users' orders." });
+        }
         const [rows] = await db.query("SELECT * FROM orders WHERE user_id = ? ORDER BY id DESC", [userId]);
         res.json(rows);
     } catch (err) {
@@ -123,7 +150,7 @@ app.get('/api/products/:id', async (req, res) => {
     }
 });
 
-app.post('/api/products', upload.single('imageFile'), async (req, res) => {
+app.post('/api/products', authenticateToken, isAdmin, upload.single('imageFile'), async (req, res) => {
     try {
         const { title, author, price, category } = req.body;
         let image = req.body.image;
@@ -144,7 +171,7 @@ app.post('/api/products', upload.single('imageFile'), async (req, res) => {
     }
 });
 
-app.put('/api/products/:id', upload.single('imageFile'), async (req, res) => {
+app.put('/api/products/:id', authenticateToken, isAdmin, upload.single('imageFile'), async (req, res) => {
     try {
         const { id } = req.params;
         const { title, author, price, category } = req.body;
@@ -166,9 +193,10 @@ app.put('/api/products/:id', upload.single('imageFile'), async (req, res) => {
     }
 });
 
-app.post('/api/orders', async (req, res) => {
+app.post('/api/orders', authenticateToken, async (req, res) => {
     try {
-        const { firstName, lastName, total, user_id } = req.body;
+        const { firstName, lastName, total } = req.body;
+        const user_id = req.user.id;
         const customerName = `${firstName} ${lastName}`;
         const orderDate = new Date().toISOString().split('T')[0];
         const status = 'Pending';
@@ -178,7 +206,7 @@ app.post('/api/orders', async (req, res) => {
 
         const [result] = await db.query(
             "INSERT INTO orders (user_id, customerName, orderDate, totalAmount, status) VALUES (?, ?, ?, ?, ?)",
-            [user_id || null, customerName, orderDate, totalAmount, status]
+            [user_id, customerName, orderDate, totalAmount, status]
         );
 
         res.json({ id: result.insertId, message: "Order placed successfully" });
@@ -187,7 +215,7 @@ app.post('/api/orders', async (req, res) => {
     }
 });
 
-app.delete('/api/products/:id', async (req, res) => {
+app.delete('/api/products/:id', authenticateToken, isAdmin, async (req, res) => {
     try {
         const { id } = req.params;
         const [result] = await db.query("DELETE FROM products WHERE id = ?", [id]);
