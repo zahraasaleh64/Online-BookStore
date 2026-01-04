@@ -46,11 +46,14 @@ The files must be placed in your `public_html` folder. Your directory structure 
 - `public_html/.htaccess`
 - `public_html/package.json`
 
-### 2. Configure the Node.js App
+### 2. Configure the Node.js App (CRITICAL STEPS)
 In your hosting panel (Hostinger or cPanel), go to **"Setup Node.js App"**:
-- **Application Root**: `public_html` (This is the folder containing everything).
-- **Application URL**: `yourdomain.com` (Select your domain).
-- **Application Startup File**: `server/index.js` (Tell the host to start the Master App).
+
+- **📁 WHICH FOLDER?**: Select the **ROOT folder** (usually `/public_html`). 
+  - *Do NOT select the 'server', 'frontend' or 'backend' folders here. The Root folder contains them all.*
+- **🚀 Application Startup File**: `server/index.js` 
+  - *This tells the host to start the "Brain" of the project.*
+- **Application URL**: `yourdomain.com`
 - **Node.js Version**: 20.x or higher.
 - **Application Mode**: Production.
 
