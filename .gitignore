@@ -1,5 +1,5 @@
 node_modules/
-.env
+
 *.sqlite
 hostinger_ready.zip
 .DS_Store

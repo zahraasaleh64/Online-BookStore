@@ -1,14 +1,19 @@
-# This .htaccess is for Apache servers (like cPanel) to forward traffic to your Node.js app.
-# It assumes your server is running on port 5001.
+# Passenger Configuration
+PassengerAppRoot "/home/ibnalbaladnews/bookstore.ibnalbaladnews.com"
+PassengerBaseURI "/"
+PassengerNodejs "/home/ibnalbaladnews/nodevenv/bookstore.ibnalbaladnews.com/20/bin/node"
+PassengerAppType node
+PassengerStartupFile server/index.js
+
+# Block direct access to server folder
+<Files "server/index.js">
+    Order allow,deny
+    Deny from all
+</Files>
 
 RewriteEngine On
 
-# Redirect all traffic to the Node.js application running on port 5001
-RewriteRule ^$ http://127.0.0.1:5001/ [P,L]
+# Universal fallback to root (SPA logic)
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ http://127.0.0.1:5001/$1 [P,L]
-
-# Optional: Ensure HTTPS is used
-# RewriteCond %{HTTPS} off
-# RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+RewriteRule ^(.*)$ / [QSA,L]
