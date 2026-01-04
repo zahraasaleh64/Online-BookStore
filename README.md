@@ -1,78 +1,79 @@
-# 📚 Online Bookstore - Production Deployment Guide
+# 📚 Online Bookstore - Production Deployment Guide (Hostinger/cPanel)
 
-This guide explains how to host your bookstore on **cPanel** or **Hostinger** using a single domain.
-
----
-
-## 🏗️ How the Project Works (Critical)
-You have three folders, but **you only run ONE Node.js application**.
-1.  **`/server`**: This is the "Brain". It contains the API, the Database, and the logic to show the website.
-2.  **`/frontend/build`**: This is the Customer Site (generated after you run build).
-3.  **`/backend/build`**: This is the Admin Dashboard (generated after you run build).
-
-**The Server is the Master:** When you start `server/index.js`, it automatically looks inside the `frontend/build` and `backend/build` folders to show your website to the world.
+This guide explains how to host your bookstore on **Hostinger** or **cPanel** using a single domain.
 
 ---
 
-## 🚀 Step 1: Prepare Locally (On your Mac/PC)
-Shared hosting does not have enough power to "Build" React apps. You must do this on your computer first.
+## 🏗️ How the Project Works (The "Brain" Concept)
+You have three main folders, but you only run **ONE** Node.js application.
+1.  **`/server`**: This is the **Master App**. It contains the API, the Database, and the logic to serve the entire website.
+2.  **`/frontend/build`**: The Customer Site (Pre-compiled).
+3.  **`/backend/build`**: The Admin Dashboard (Pre-compiled).
 
-```bash
-# 1. Build the Customer Front-end
-cd frontend && npm install && npm run build
-
-# 2. Build the Admin Dashboard
-cd backend && npm install && npm run build
-
-# 3. Push everything (including the new 'build' folders) to GitHub
-cd ..
-git add .
-git commit -m "Build ready for production"
-git push origin main
-```
+**Crucial Logic:** The Master App (`server/index.js`) is programmed to automatically serve the customer site from `frontend/build` and the admin dashboard from `backend/build`.
 
 ---
 
-## 🌐 Step 2: cPanel / Hostinger Setup
+## 🚀 Step 1: Prepare the Files (Local Mac/PC)
+Shared hosting does not have enough RAM/CPU to build React apps. You must build them on your computer first.
 
-### 1. Identify your Folder
-On Hostinger/cPanel, your files usually live in `public_html`. Ensure your folders look like this on the server:
+1.  **Build the Customer Site**:
+    ```bash
+    cd frontend && npm install && npm run build
+    ```
+2.  **Build the Admin Dashboard**:
+    ```bash
+    cd backend && npm install && npm run build
+    ```
+3.  **Push Everything to GitHub**:
+    ```bash
+    cd ..
+    git add .
+    git commit -m "Build ready for production"
+    git push origin main
+    ```
+    *Note: I have also created a `hostinger_ready.zip` in the root folder which is ready to be uploaded directly if you don't want to use Git on the server.*
+
+---
+
+## 🌐 Step 2: Deployment on Hostinger/cPanel
+
+### 1. File Placement
+The files must be placed in your `public_html` folder. Your directory structure on the server should look like this:
 - `public_html/server/`
 - `public_html/frontend/build/`
 - `public_html/backend/build/`
 - `public_html/.htaccess`
+- `public_html/package.json`
 
 ### 2. Configure the Node.js App
-In your hosting panel, look for **"Setup Node.js App"** and use these EXACT settings:
+In your hosting panel (Hostinger or cPanel), go to **"Setup Node.js App"**:
+- **Application Root**: `public_html` (This is the folder containing everything).
+- **Application URL**: `yourdomain.com` (Select your domain).
+- **Application Startup File**: `server/index.js` (Tell the host to start the Master App).
 - **Node.js Version**: 20.x or higher.
 - **Application Mode**: Production.
-- **Application Root**: `public_html` (This is the parent folder containing server, frontend, and backend).
-- **Application URL**: `yourdomain.com`
-- **Application Startup File**: `server/index.js` (Tell the host to start the 'Brain').
 
-### 3. Install Dependencies
-After creating the app, click the **"Run npm install"** button (or use terminal in `public_html/server`) to install the server's requirements (Express, SQLite3, etc.).
+### 3. Connection & Dependencies
+- **Install Server Requirements**: In the Node.js setup page, click the **"Run npm install"** button. This installs the specific needs for the server (Express, SQLite3, etc.) located in `server/package.json`.
+- **Database**: The shop uses **SQLite**. It connects to `server/database.sqlite` automatically. You **do not** need to create a MySQL database in cPanel.
 
 ---
 
-## 🗄️ Step 3: Database & Permissions
-Your shop uses **SQLite**, which stores everything in a single file: `server/database.sqlite`.
-
-1.  **Database Connection**: You don't need a MySQL username or password. The code automatically connects to the file.
-2.  **Writing Access (Important)**: For the shop to save products and orders, the server must be allowed to "Write". 
-    - Using your hosting's **File Manager**, right-click the `server` folder.
-    - Select **Permissions**.
-    - Ensure it is set to **755** or **775** (Owner and Group must have "Write" permission).
-    - Do the same for the `server/uploads` folder so you can upload book covers.
+## 🗄️ Step 4: Folder Permissions (IMPORTANT)
+If you can't add products or see images, check these permissions in your **File Manager**:
+1.  Right-click the `server` folder -> **Permissions** -> Set to **755** (Ensure "Write" is checked for the owner).
+2.  Do the same for `server/uploads` (the folder for book covers).
+3.  Ensure `server/database.sqlite` is writable.
 
 ---
 
-## 🛠️ Summary of Access
-- **Customer Site**: `https://yourdomain.com`
-- **Admin Dashboard**: `https://yourdomain.com/admin`
-- **API Endpoints**: `https://yourdomain.com/api/...`
+## 🛠️ Accessing your Site
+- **Customer Store**: `https://yourdomain.com/`
+- **Admin Panel**: `https://yourdomain.com/admin`
+- **API (Internal)**: `https://yourdomain.com/api/`
 
 ---
 
-## 🔒 Security Fix
-Before going live, open `server/index.js` and change the `SECRET_KEY` on line 11 to a long, random password. This protects your user logins.
+## 🔒 Security
+Change the `SECRET_KEY` inside `server/index.js` (Line 11) to a private random string before you start taking real orders.
